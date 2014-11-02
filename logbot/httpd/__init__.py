@@ -87,4 +87,5 @@ def search():
 
 def run():
     supress_stdout_logs()
+    app.config.from_envvar('LOGBOT_SETTINGS')
     app.run(host='0.0.0.0')
