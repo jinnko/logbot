@@ -8,6 +8,10 @@ from getpass import getuser, getpass
 from os.path import exists, expanduser, join
 import ConfigParser
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
+
 class LogbotConfig(object):
 
     def __init__(self):
@@ -103,8 +107,17 @@ def main(argv=None):
     register_listener(log.log)
     register_listener(search.index)
 
+    logging.debug('Starting httpd.')
     run_thread(httpd.run, [config.items('httpd')])
 
+    logging.debug('Starting logbot.')
+    logging.debug(' - host: %s' % args.host)
+    logging.debug(' - port: %s' % args.port)
+    logging.debug(' - user: %s' % user)
+    logging.debug(' - passwd: %s' % passwd)
+    logging.debug(' - rooms: %s' % args.rooms)
+    logging.debug(' - use_tls: %s' % args.use_tls)
+    logging.debug(' - tz: %s' % tz)
     bot.run(
         args.host,
         args.port,
