@@ -59,7 +59,10 @@ class LogbotConfig(object):
                 raise Exception
 
     def items(self, section):
-        return self.config.items(section)
+        items = {}
+        for key in self.default_options[section].keys():
+            items.update({key: self.get(section, key)})
+        return items
 
 
 def main(argv=None):
