@@ -85,6 +85,9 @@ def search():
     )
 
 
-def run():
+def run(config):
+    listen_address = filter(lambda x: x[0] == 'listen_address', config)[0][1]
+    listen_port = filter(lambda x: x[0] == 'listen_port', config)[0][1]
+
     supress_stdout_logs()
-    app.run(host='0.0.0.0', port=5003)
+    app.run(host=listen_address, port=listen_port)
