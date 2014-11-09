@@ -48,7 +48,7 @@ class LogbotConfig(object):
 
     def getboolean(self, section, item):
         try:
-            self.config.getboolean(section, item)
+            return self.config.getboolean(section, item)
         except ConfigParser.NoSectionError as e:
             if item in self.default_options[section]:
                 if self.default_options[section][item] in ['True', 'true', 1, 0, 'T', 't']:
@@ -71,27 +71,18 @@ def main(argv=None):
     config = LogbotConfig()
 
     parser = ArgumentParser(description='Jabber Log Bot')
-    parser.add_argument('--user', help='jabber user', default=None)
-    parser.add_argument('--passwd', help='jabber password', default=None)
-    parser.add_argument('--host', help='jabber host', default='localhost')
-    parser.add_argument('--port', help='jabber port', default=5222, type=int)
     parser.add_argument('--user', help='jabber user', default=config.get('logbot', 'user'))
     parser.add_argument('--passwd', help='jabber password', default=config.get('logbot', 'passwd'))
     parser.add_argument('--host', help='jabber host', default=config.get('logbot', 'host'))
     parser.add_argument('--port', help='jabber port', default=config.get('logbot', 'port'), type=int)
     parser.add_argument('--no-tls', help='do not use tls', dest='use_tls',
-                        action='store_false', default=True)
-    parser.add_argument('rooms', help='rooms to log', nargs='+',
-                        metavar='room')
                         action='store_false', default=config.getboolean('logbot', 'tls'))
     parser.add_argument('--version', action='version',
                         version='logbot {}'.format(__version__))
-    parser.add_argument('--timezone', help='time zone', default=None)
     parser.add_argument('--timezone', help='time zone', default=config.get('logbot', 'timezone'))
     parser.add_argument('rooms', help='rooms to log', nargs='+',
                         metavar='room')
 
-    args = parser.parse_args(argv[1:])
     argv.extend(config.get('logbot', 'rooms').split())
     args = parser.parse_args(argv[1:].append(config.get('logbot', 'rooms')))
 
@@ -112,7 +103,6 @@ def main(argv=None):
     register_listener(log.log)
     register_listener(search.index)
 
-    run_thread(httpd.run)
     run_thread(httpd.run, [config.items('httpd')])
 
     bot.run(
